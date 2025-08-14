@@ -20,16 +20,16 @@ int main() {
 
 void tfs_test_init() {
   struct FileSystem *fs = tfs_init();
-  TEST_ASSERT_NOT_EQUAL(fs, NULL);
-  TEST_ASSERT_EQUAL(fs->superblock.block_size, BLOCK_SIZE);
-  TEST_ASSERT_EQUAL(fs->superblock.dir_table_size, DIR_TABLE_SIZE);
-  TEST_ASSERT_EQUAL(fs->superblock.dir_table_start, DIR_TABLE_START);
-  TEST_ASSERT_EQUAL(fs->superblock.FAT_size, FAT_SIZE);
-  TEST_ASSERT_EQUAL(fs->superblock.FAT_start, FAT_START);
-  TEST_ASSERT_EQUAL(fs->superblock.free_blocks, FREE_BLOCKS);
-  TEST_ASSERT_EQUAL(fs->superblock.total_blocks, TOTAL_BLOCKS);
-  TEST_ASSERT_EQUAL(fs->superblock.magic, MAGIC_NUMBER);
-  TEST_ASSERT_EQUAL(fs->superblock.version, VERSION);
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(fs, NULL, "Filesystem must not be NULL");
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.block_size, BLOCK_SIZE);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.dir_table_size, DIR_TABLE_SIZE);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.dir_table_start, DIR_TABLE_START);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.FAT_size, FAT_SIZE);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.FAT_start, FAT_START);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.free_blocks, FREE_BLOCKS);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.total_blocks, TOTAL_BLOCKS);
+  TEST_ASSERT_EQUAL_UINT32(fs->superblock.magic, MAGIC_NUMBER);
+  TEST_ASSERT_EQUAL_UINT16(fs->superblock.version, VERSION);
   tfs_free_fs(fs);
 }
 
@@ -44,16 +44,16 @@ void tfs_test_readwrite_fs() {
   tfs_save_fs(fs, "file.tfs");
   tfs_free_fs(fs);
   struct FileSystem *read_fs = tfs_read_fs("file.tfs");
-  TEST_ASSERT_NOT_EQUAL(read_fs, NULL);
-  TEST_ASSERT_EQUAL(read_fs->superblock.block_size, new_block_size);
-  TEST_ASSERT_EQUAL(read_fs->superblock.dir_table_size, DIR_TABLE_SIZE);
-  TEST_ASSERT_EQUAL(read_fs->superblock.dir_table_start, DIR_TABLE_START);
-  TEST_ASSERT_EQUAL(read_fs->superblock.FAT_size, new_FAT_size);
-  TEST_ASSERT_EQUAL(read_fs->superblock.FAT_start, FAT_START);
-  TEST_ASSERT_EQUAL(read_fs->superblock.free_blocks, FREE_BLOCKS);
-  TEST_ASSERT_EQUAL(read_fs->superblock.total_blocks, TOTAL_BLOCKS);
-  TEST_ASSERT_EQUAL(read_fs->superblock.magic, MAGIC_NUMBER);
-  TEST_ASSERT_EQUAL(read_fs->superblock.version, new_version);
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(read_fs, NULL, "File system must not be NULL");
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.block_size, new_block_size);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.dir_table_size, DIR_TABLE_SIZE);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.dir_table_start, DIR_TABLE_START);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.FAT_size, new_FAT_size);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.FAT_start, FAT_START);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.free_blocks, FREE_BLOCKS);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.total_blocks, TOTAL_BLOCKS);
+  TEST_ASSERT_EQUAL_HEX32(read_fs->superblock.magic, MAGIC_NUMBER);
+  TEST_ASSERT_EQUAL_INT16(read_fs->superblock.version, new_version);
   tfs_free_fs(read_fs);
 }
 
@@ -66,9 +66,10 @@ void tfs_test_readwrite_data() {
   printf("Index; %hu, Index_a: %hu\n", index, index_a);
   TEST_ASSERT_EQUAL_STRING(data, tfs_read_data(fs, index));
   TEST_ASSERT_EQUAL_STRING(data_a, tfs_read_data(fs, index_a));
-  TEST_ASSERT_NOT_EQUAL(index, index_a);
-  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].starting_block, fs->dir_table[index_a].starting_block);
-  TEST_ASSERT_EQUAL(fs->dir_table[index].is_dir, 0);
+  TEST_ASSERT_NOT_EQUAL_INT16(index, index_a);
+  TEST_ASSERT_NOT_EQUAL_INT16(fs->dir_table[index].starting_block, fs->dir_table[index_a].starting_block);
+  TEST_ASSERT_FALSE(fs->dir_table[index].is_dir);
+  TEST_ASSERT_FALSE(fs->dir_table[index_a].is_dir);
   TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].created, (time_t)0); 
   TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].last_modified, (time_t)0);
   TEST_ASSERT_EQUAL(fs->dir_table[index].last_modified, fs->dir_table[index].created);
