@@ -1,16 +1,19 @@
 #include "tfslib.h"
 #include "unity.h"
+#include <time.h>
 
 void setUp(void) {}
 void tearDown(void) {}
 
 void tfs_test_init();
-void tfs_test_readwrite();
+void tfs_test_readwrite_fs();
+void tfs_test_readwrite_data();
 
 int main() {
   UNITY_BEGIN();
   RUN_TEST(tfs_test_init);
-  RUN_TEST(tfs_test_readwrite);
+  RUN_TEST(tfs_test_readwrite_fs);
+  RUN_TEST(tfs_test_readwrite_data);
   UNITY_END();
   return 0;
 }
@@ -30,7 +33,7 @@ void tfs_test_init() {
   tfs_free_fs(fs);
 }
 
-void tfs_test_readwrite() {
+void tfs_test_readwrite_fs() {
   struct FileSystem *fs = tfs_init();
   uint16_t new_version = 10;
   uint16_t new_block_size = 8192;
@@ -52,4 +55,21 @@ void tfs_test_readwrite() {
   TEST_ASSERT_EQUAL(read_fs->superblock.magic, MAGIC_NUMBER);
   TEST_ASSERT_EQUAL(read_fs->superblock.version, new_version);
   tfs_free_fs(read_fs);
+}
+
+void tfs_test_readwrite_data() {
+  struct FileSystem *fs = tfs_init();
+  unsigned char* data = (unsigned char*)"This is my data!";
+  uint16_t index = tfs_write_data(fs, "test.txt", data, sizeof(data));
+  unsigned char* data_a = (unsigned char*)"Even more data!!";
+  uint16_t index_a = tfs_write_data(fs, "test_a.txt", data_a, sizeof(data_a));
+  printf("Index; %hu, Index_a: %hu\n", index, index_a);
+  TEST_ASSERT_EQUAL_STRING(data, tfs_read_data(fs, index));
+  TEST_ASSERT_EQUAL_STRING(data_a, tfs_read_data(fs, index_a));
+  TEST_ASSERT_NOT_EQUAL(index, index_a);
+  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].starting_block, fs->dir_table[index_a].starting_block);
+  TEST_ASSERT_EQUAL(fs->dir_table[index].is_dir, 0);
+  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].created, (time_t)0); 
+  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].last_modified, (time_t)0);
+  TEST_ASSERT_EQUAL(fs->dir_table[index].last_modified, fs->dir_table[index].created);
 }
