@@ -3,6 +3,7 @@
 
 #include "tfslib.h"
 
+// Writes the file system to a file
 int8_t tfs_save_fs(struct FileSystem *fs, char *name) {
   FILE* fptr = fopen(name, "w");
   if (!fptr)

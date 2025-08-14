@@ -10,83 +10,11 @@
       "-ggdb",
       "-c",
       "-o",
-      "build/free_fs.o",
-      "src/free_fs.c"
-    ],
-    "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/free_fs.c",
-    "output": "/home/tom/Programming/C/tfs/build/free_fs.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-Wall",
-      "-Wextra",
-      "-Iinclude",
-      "-Ilib/Unity/src",
-      "-O0",
-      "-ggdb",
-      "-c",
-      "-o",
-      "build/init_fs.o",
-      "src/init_fs.c"
-    ],
-    "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/init_fs.c",
-    "output": "/home/tom/Programming/C/tfs/build/init_fs.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-Wall",
-      "-Wextra",
-      "-Iinclude",
-      "-Ilib/Unity/src",
-      "-O0",
-      "-ggdb",
-      "-c",
-      "-o",
       "build/main.o",
       "src/main.c"
     ],
     "directory": "/home/tom/Programming/C/tfs",
     "file": "/home/tom/Programming/C/tfs/src/main.c",
     "output": "/home/tom/Programming/C/tfs/build/main.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-Wall",
-      "-Wextra",
-      "-Iinclude",
-      "-Ilib/Unity/src",
-      "-O0",
-      "-ggdb",
-      "-c",
-      "-o",
-      "build/read_data.o",
-      "src/read_data.c"
-    ],
-    "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/read_data.c",
-    "output": "/home/tom/Programming/C/tfs/build/read_data.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang",
-      "-Wall",
-      "-Wextra",
-      "-Iinclude",
-      "-Ilib/Unity/src",
-      "-O0",
-      "-ggdb",
-      "-c",
-      "-o",
-      "build/save_data.o",
-      "src/save_data.c"
-    ],
-    "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/save_data.c",
-    "output": "/home/tom/Programming/C/tfs/build/save_data.o"
   }
 ]

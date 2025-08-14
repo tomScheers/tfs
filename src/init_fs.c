@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include "tfslib.h"
 
+// Initializes the file system
 struct FileSystem* tfs_init() {
   struct FileSystem* fs = malloc(sizeof(struct FileSystem));
-  fs->FAT = calloc(FAT_SIZE, sizeof(Block) * BLOCK_SIZE);
-  fs->data = calloc(FREE_BLOCKS, sizeof(Block) * BLOCK_SIZE);
-  fs->dir_table = calloc(DIR_TABLE_SIZE, sizeof(Block) * BLOCK_SIZE);
+  fs->FAT = calloc(FAT_SIZE, sizeof(unsigned char*) * BLOCK_SIZE);
+  fs->data = calloc(FREE_BLOCKS, sizeof(unsigned char*) * BLOCK_SIZE);
+  fs->dir_table = calloc(DIR_TABLE_SIZE, sizeof(unsigned char*) * BLOCK_SIZE);
 
   fs->superblock.magic = MAGIC_NUMBER;
   fs->superblock.block_size = BLOCK_SIZE;

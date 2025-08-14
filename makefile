@@ -20,7 +20,8 @@ LIB_OBJ := $(patsubst src/%.c,build/%.o,$(LIB_SRC))
 BIN := bin/$(PROGRAM)
 TEST_BIN := bin/test_$(PROGRAM)
 
-all: $(BIN) compile_commands.json
+all:
+	bear -- make $(BIN)
 
 # Main program
 $(BIN): $(OBJ) | bin
@@ -53,9 +54,6 @@ bin:
 	@mkdir -p bin
 
 # Extra
-compile_commands.json:
-	bear -- make $(BIN)
-
 clean:
 	rm -rf build bin compile_commands.json test_build
 

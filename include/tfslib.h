@@ -14,8 +14,6 @@
 #define FAT_SIZE 1
 #define FREE_BLOCKS TOTAL_BLOCKS - DIR_TABLE_SIZE - FAT_SIZE - 1
 
-typedef unsigned char* Block;
-
 struct SuperBlock {
   uint32_t magic;
   uint16_t version;
@@ -39,14 +37,18 @@ struct DirTableEntry {
 
 struct FileSystem {
   struct SuperBlock superblock;
-  struct DirTableEntry* dir_table; // Array-of-structs, each struct represents one file/directory
-  Block FAT; // Must be allocated on the heap
-  Block* data; // Must be allocated on the heap
+  struct DirTableEntry
+      *dir_table; // Array-of-structs, each struct represents one file/directory
+  unsigned char *FAT;      // Must be allocated on the heap
+  unsigned char **data;    // Must be allocated on the heap
 };
 
-struct FileSystem* tfs_init();
-int8_t tfs_save_fs(struct FileSystem* fs, char name[]);
-struct FileSystem* tfs_read_fs(char file_name[]);
-void tfs_free_fs(struct FileSystem* fs);
+struct FileSystem *tfs_init();
+int8_t tfs_save_fs(struct FileSystem *fs, char name[]);
+struct FileSystem *tfs_read_fs(char file_name[]);
+void tfs_free_fs(struct FileSystem *fs);
+int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
+                       unsigned char *bytes, size_t size);
+unsigned char* tfs_read_data(struct FileSystem *fs, uint16_t index);
 
 #endif

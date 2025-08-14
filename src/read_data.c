@@ -1,17 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "tfslib.h"
+#include <stdio.h>
 
-struct FileSystem *tfs_read_fs(char file_name[]) {
-  FILE *fptr = fopen(file_name, "rb");
-  if (!fptr)
-    return NULL;
-  struct FileSystem *fs = malloc(sizeof(struct FileSystem));
-  if (fread(fs, sizeof(*fs), 1, fptr) != 1) {
-    fclose(fptr);
-    return NULL;
-  }
-  fclose(fptr);
-  return fs;
+// Reads the data on a block and returns it
+unsigned char* tfs_read_data(struct FileSystem *fs, uint16_t index) {
+  uint16_t data_index = fs->dir_table[index].starting_block;
+  printf("Starting block: %hu\n", data_index);
+  return fs->data[data_index];
 }
