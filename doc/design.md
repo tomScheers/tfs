@@ -36,17 +36,19 @@ The directory table holds all of the metadata about the file alongside pointing 
 | Created        | 8 bytes  |
 | Last Modified  | 8 bytes  |
 | Starting block | 2 bytes  |
+| Data Size      | 2 bytes  |
 
 > Keep in mind that both the superblock and the directory table are stored in an entire block, meaning that it's possible to store more metadata in the future
 
 ### FAT
-The FAT is basically just a list of addresses with a size of 2 bytes each. Each address is the next file it points to, with #FFFF representing the EOF, and #0000 meaning the data is free or reserved:
-```00 00 00 06 00 09 00 00 FF```
-Here the first three blocks are 00, meaning they're reserved. After that we get 05, which means that block #3 points to block #5 (0-indexed).
-block #5 points to 09 (block #8), which in turn is FF, meaning it's EOF.
+The FAT is basically just a list of addresses with a size of 2 bytes each. Each address is the next file it points to, with 0xFF representing the EOF, and 0x00 meaning the data is free or reserved:
+```0x00 0x00 0x00 0x06 0x00 0x09 0x00 0x00 0xFF```
+Here the first three blocks are 0x00, meaning they're reserved. After that we get 0x06, which means that block #4 points to block #6 (0-indexed).
+block #6 points to 0x09 (block #8), which in turn is FF, meaning it's EOF.
 
 ### Blocks
 Each data block is the of the size given in the superblock. It just stores the data in a binary format and any metadata associated with it is stored in the directory table or the FAT.
+The EOF in a block 
 
 ## Dir entry types
 A dir_entry can either be a file or a directory.

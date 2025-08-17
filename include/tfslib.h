@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include <time.h>
 
-#define BLOCK_SIZE 4096
+#define BLOCK_SIZE 64
 #define MAGIC_NUMBER 0x74667300 // 't' 'f' 's' '\0', used for magic number
 #define VERSION 0
-#define TOTAL_BLOCKS 32
+#define TOTAL_BLOCKS 12
 #define DIR_TABLE_START 1
 #define DIR_TABLE_SIZE 1
 #define FAT_START 2
@@ -31,6 +31,8 @@ struct DirTableEntry {
   time_t created;
   time_t last_modified;
   uint16_t starting_block;
+  uint16_t size;  // Size of the data
+  uint16_t FAT_index; // Index of the FAT entry
   uint8_t is_dir; // Directories are handled differently from files, see doc
   char name[64];
 };
@@ -39,8 +41,9 @@ struct FileSystem {
   struct SuperBlock superblock;
   struct DirTableEntry
       *dir_table; // Array-of-structs, each struct represents one file/directory
-  unsigned char *FAT;      // Must be allocated on the heap
-  unsigned char **data;    // Must be allocated on the heap
+  unsigned char *FAT; // Must be allocated on the heap
+  unsigned char
+      *data; // Must be allocated on the heap, 1-dimensional flat array
 };
 
 struct FileSystem *tfs_init();
@@ -49,6 +52,6 @@ struct FileSystem *tfs_read_fs(char file_name[]);
 void tfs_free_fs(struct FileSystem *fs);
 int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
                        unsigned char *bytes, size_t size);
-unsigned char* tfs_read_data(struct FileSystem *fs, uint16_t index);
+unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t index);
 
 #endif

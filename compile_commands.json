@@ -1,7 +1,7 @@
 [
   {
     "arguments": [
-      "/usr/bin/clang",
+      "/usr/bin/gcc",
       "-Wall",
       "-Wextra",
       "-Iinclude",
@@ -10,11 +10,11 @@
       "-ggdb",
       "-c",
       "-o",
-      "build/main.o",
-      "src/main.c"
+      "build/write_data.o",
+      "src/write_data.c"
     ],
     "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/main.c",
-    "output": "/home/tom/Programming/C/tfs/build/main.o"
+    "file": "/home/tom/Programming/C/tfs/src/write_data.c",
+    "output": "/home/tom/Programming/C/tfs/build/write_data.o"
   }
 ]

@@ -6,11 +6,10 @@
 
 // Writes data to file block
 int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
-                      unsigned char *bytes, size_t size) {
-  if ((uint16_t)((double)size / (double)BLOCK_SIZE) > fs->superblock.free_blocks)
+                       unsigned char *bytes, size_t size) {
+  if ((uint16_t)((double)size / (double)BLOCK_SIZE) >
+      fs->superblock.free_blocks)
     return -1;
-
-  size_t block_index = 1;
 
   uint16_t dir_table_start = fs->superblock.dir_table_start;
   uint16_t dir_table_end =
@@ -18,15 +17,41 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
   uint16_t FAT_start = fs->superblock.FAT_start;
   uint16_t FAT_end = fs->superblock.FAT_start + fs->superblock.FAT_size;
 
-  while (fs->FAT[block_index] != 0x00 || (block_index >= dir_table_start &&
-         block_index <= dir_table_end) || (block_index >= FAT_start && 
-         block_index <= FAT_end))
-    ++block_index;
-  printf("Block Index; %zu\n", block_index);
+  uint8_t is_EOF = 0;
+  size_t prev_block_index = 0;
+  size_t block_index = 0;
+  size_t first_block_index = 0;
+  size_t count = 0;
+  while (!is_EOF) {
+    block_index = 1;
+    while (fs->FAT[block_index] != 0x00 ||
+           (block_index >= dir_table_start && block_index < dir_table_end) ||
+           (block_index >= FAT_start && block_index < FAT_end) ||
+           block_index == prev_block_index) {
+      printf("FAT_LOOP: %d\n", fs->FAT[block_index]);
+      ++block_index;
+    }
+    printf("Block Index; %zu\n", block_index);
 
-  fs->data[block_index] = bytes;
 
-  fs->FAT[block_index] = 0xFF; // Set to EOF
+    if (count > 0)
+      fs->FAT[prev_block_index] = block_index;
+    else
+      first_block_index = block_index;
+
+    is_EOF = (signed)size - (signed)fs->superblock.block_size * (signed)count <
+             (signed)fs->superblock.block_size;
+
+    if (is_EOF)
+      memcpy(fs->data + block_index * fs->superblock.block_size, bytes + count * fs->superblock.block_size, size % fs->superblock.block_size);
+    else
+      memcpy(fs->data + block_index * fs->superblock.block_size, bytes + count * fs->superblock.block_size, fs->superblock.block_size);
+
+    ++count;
+    prev_block_index = block_index;
+  }
+
+  fs->FAT[block_index] = 0xFF; // Set last block to EOF
 
   uint16_t dir_table_index =
       fs->superblock.total_blocks - fs->superblock.free_blocks;
@@ -35,9 +60,8 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
 
   fs->dir_table[dir_table_index].starting_block = dir_table_start;
 
-  strncpy(fs->dir_table[dir_table_index].name, file_path, sizeof(fs->dir_table[dir_table_index].name) - 1);
-
-  fs->dir_table[dir_table_index].name[sizeof(fs->dir_table[dir_table_index].name) - 1] = '\0';
+  strncat(fs->dir_table[dir_table_index].name, file_path, strlen(file_path));
+  fs->dir_table[dir_table_index].name[strlen(file_path)] = '\0';
 
   time_t current_time = time(NULL);
 
@@ -48,8 +72,11 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
 
   fs->dir_table[dir_table_index].created = current_time;
   fs->dir_table[dir_table_index].last_modified = current_time;
-  fs->dir_table[dir_table_index].starting_block = block_index;
-  
+  fs->dir_table[dir_table_index].starting_block = first_block_index;
+
+  printf("Size to be written: %zu\n", size);
+  fs->dir_table[dir_table_index].size = size;
+
   --fs->superblock.free_blocks;
 
   return dir_table_index;

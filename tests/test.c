@@ -1,5 +1,7 @@
 #include "tfslib.h"
 #include "unity.h"
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 void setUp(void) {}
@@ -59,18 +61,60 @@ void tfs_test_readwrite_fs() {
 
 void tfs_test_readwrite_data() {
   struct FileSystem *fs = tfs_init();
-  unsigned char* data = (unsigned char*)"This is my data!";
-  uint16_t index = tfs_write_data(fs, "test.txt", data, sizeof(data));
-  unsigned char* data_a = (unsigned char*)"Even more data!!";
-  uint16_t index_a = tfs_write_data(fs, "test_a.txt", data_a, sizeof(data_a));
-  printf("Index; %hu, Index_a: %hu\n", index, index_a);
-  TEST_ASSERT_EQUAL_STRING(data, tfs_read_data(fs, index));
-  TEST_ASSERT_EQUAL_STRING(data_a, tfs_read_data(fs, index_a));
+  unsigned char *data = (unsigned char *)"This is my data!";
+  uint16_t index =
+      tfs_write_data(fs, "test.txt", data, strlen((char *)data) + 1);
+  unsigned char *data_a = (unsigned char *)"Even more data!!";
+  uint16_t index_a =
+      tfs_write_data(fs, "test_a.txt", data_a, strlen((char *)data_a) + 1);
+
+  // Print FAT
+  printf("faT: ");
+  for (int i = 0; i < fs->superblock.block_size; ++i)
+    printf("%X ", fs->FAT[i]);
+  putchar('\n');
+
+  unsigned char *read_data = tfs_read_data(fs, index);
+
+  TEST_ASSERT_EQUAL_STRING(data, read_data);
+
+  free(read_data);
+  printf("index_a: %u\n", index_a);
+  read_data = tfs_read_data(fs, index_a);
+  TEST_ASSERT_EQUAL_STRING(data_a, read_data);
+  free(read_data);
+  printf("read data\n");
   TEST_ASSERT_NOT_EQUAL_INT16(index, index_a);
-  TEST_ASSERT_NOT_EQUAL_INT16(fs->dir_table[index].starting_block, fs->dir_table[index_a].starting_block);
+  TEST_ASSERT_NOT_EQUAL_INT16(fs->dir_table[index].starting_block,
+                              fs->dir_table[index_a].starting_block);
   TEST_ASSERT_FALSE(fs->dir_table[index].is_dir);
   TEST_ASSERT_FALSE(fs->dir_table[index_a].is_dir);
-  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].created, (time_t)0); 
+  TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].created, (time_t)0);
   TEST_ASSERT_NOT_EQUAL(fs->dir_table[index].last_modified, (time_t)0);
-  TEST_ASSERT_EQUAL(fs->dir_table[index].last_modified, fs->dir_table[index].created);
+  TEST_ASSERT_EQUAL(fs->dir_table[index].last_modified,
+                    fs->dir_table[index].created);
+
+  printf("Completed\n\n");
+  // Tests for large data sizes
+  unsigned char *data_l = malloc(fs->superblock.block_size * 3 + 1);
+  for (int i = 0; i < fs->superblock.block_size * 3; ++i)
+    data_l[i] = 'a';
+  data_l[fs->superblock.block_size * 3] = '\0';
+
+  uint16_t index_l =
+      tfs_write_data(fs, "test_l.txt", data_l, fs->superblock.block_size * 3 + 1);
+  printf("faT: ");
+  for (int i = 0; i < fs->superblock.block_size; ++i)
+    printf("%X ", fs->FAT[i]);
+  putchar('\n');
+  // Print FAT
+  printf("faT: ");
+  for (int i = 0; i < fs->superblock.block_size; ++i)
+    printf("%X ", fs->FAT[i]);
+  putchar('\n');
+  read_data = tfs_read_data(fs, index_l);
+  TEST_ASSERT_EQUAL_STRING(data_l, read_data);
+  free(data_l);
+  free(read_data);
+  tfs_free_fs(fs);
 }

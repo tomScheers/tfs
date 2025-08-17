@@ -1,8 +1,8 @@
 PROGRAM := tfs
 
-CC := clang
-CFLAGS := -Wall -Wextra -Iinclude -Ilib/Unity/src -O0 -ggdb
-CFLAGS_TEST := -Wall -Wextra -O0 -Iinclude -Ilib/Unity/src
+CC := gcc
+CFLAGS := -Wall -Wextra -Iinclude -Ilib/Unity/src -O0 -ggdb -std=c99
+CFLAGS_TEST := -Wall -Wextra -O0 -Iinclude -Ilib/Unity/src -fsanitize=address,undefined -std=c99
 
 LD_FLAGS_TEST := -fsanitize=undefined,leak
 
