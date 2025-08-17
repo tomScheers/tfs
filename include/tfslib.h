@@ -14,8 +14,17 @@
 #define FAT_SIZE 1
 #define FREE_BLOCKS TOTAL_BLOCKS - DIR_TABLE_SIZE - FAT_SIZE - 1
 
+#define DATA_EOF 0xFF
+
+// These errors are only returned through non-pointer return types
+// Errors are always negative
+enum Errors {
+  ERR_INSUFFICIENT_MEMORY = -1,
+  ERR_TIME_RETRIEVAL,
+};
+
 struct SuperBlock {
-  uint32_t magic;
+  uint32_t magic; // Magic number to verify the file
   uint16_t version;
   uint16_t block_size;
   uint16_t total_blocks;
@@ -31,9 +40,9 @@ struct DirTableEntry {
   time_t created;
   time_t last_modified;
   uint16_t starting_block;
-  uint16_t size;  // Size of the data
+  uint16_t size;      // Size of the data
   uint16_t FAT_index; // Index of the FAT entry
-  uint8_t is_dir; // Directories are handled differently from files, see doc
+  uint8_t is_dir;     // Directories are handled differently from files, see doc
   char name[64];
 };
 
@@ -53,5 +62,11 @@ void tfs_free_fs(struct FileSystem *fs);
 int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
                        unsigned char *bytes, size_t size);
 unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t index);
+
+
+// Utility functions
+void print_FAT(struct FileSystem *fs);
+void print_dir_table(struct FileSystem *fs, size_t index);
+void print_superblock(struct FileSystem *fs);
 
 #endif

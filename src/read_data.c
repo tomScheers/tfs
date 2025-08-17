@@ -4,72 +4,76 @@
 #include <string.h>
 
 // Reads the data on a block and returns it
-unsigned char *tfs_read_block(struct FileSystem *fs, uint16_t dir_table_index,
-                              uint16_t dir_table_head) {
-  printf("Index; %u\n", dir_table_index);
-  printf("Data: %s\n", fs->data + fs->superblock.block_size * dir_table_index);
-
+static unsigned char *tfs_read_block(struct FileSystem *fs,
+                                     uint16_t dir_table_index,
+                                     uint16_t dir_table_head) {
   uint16_t data_index = dir_table_index * fs->superblock.block_size;
-
-  uint8_t is_EOF = fs->FAT[dir_table_index] == 0xFF;
-
+  uint8_t is_EOF = fs->FAT[dir_table_index] == DATA_EOF;
   unsigned char *data = NULL;
-
   size_t data_size;
-  if (is_EOF) {
-    printf("IS EOF!!\n");
+
+  if (is_EOF)
     data_size = fs->dir_table[dir_table_head].size % fs->superblock.block_size;
-    printf("data size: %zu\n", data_size);
-  } else {
+  else
     data_size = fs->superblock.block_size;
-    printf("Data size: %zu\n", data_size);
-  }
 
   data = malloc(sizeof(*data) * data_size);
-  printf("Dataptr: %p\n", data);
-  memcpy(data, fs->data + data_index, data_size);
-  for (size_t i = 0; i < data_size; ++i)
-    printf("%02X ", data[i]);
-  putchar('\n');
+  if (!data)
+    return NULL;
 
+  memcpy(data, fs->data + data_index, data_size);
   return data;
 }
 
 // data_rel_index is index relative to the data stream
 unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
-  size_t size = 0;
+  // The data memory is handled as a dynamic array in order to store any
+  // arbitrary amount of data
   size_t capacity = 2;
-  printf("Allocating\n");
   unsigned char *data =
       malloc(sizeof(*data) * capacity * fs->superblock.block_size);
-  printf("Allocated\n");
+
+  if (!data)
+    return NULL;
 
   uint16_t curr_index = dir_table_index;
-
   size_t count = 0;
+
   do {
-    if (capacity <= size) {
-      capacity *= 2;
-      data =
+    if (capacity <= count) {
+      capacity *= 2; // Doubles the data size each iteration
+      unsigned char *tmp =
           realloc(data, sizeof(*data) * capacity * fs->superblock.block_size);
+
+      if (!tmp) {
+        free(data);
+        return NULL;
+      }
+
+      data = tmp;
     }
+
     unsigned char *curr_data = tfs_read_block(fs, curr_index, dir_table_index);
-    printf("Curr index: %hu\n", curr_index);
-    if (fs->FAT[curr_index] == 0xFF) {
-      printf("IS ALSO EOF\n");
-      memcpy(data + fs->superblock.block_size * count, curr_data,
-             fs->dir_table[dir_table_index].size % fs->superblock.block_size);
+
+    if (!curr_data) {
+      free(data);
+      return NULL;
     }
-    else {
-      memcpy(data + fs->superblock.block_size * count, curr_data,
-             fs->superblock.block_size);
-    }
+
+    size_t size;
+
+    // If the current memory block is EOF then the size of the data is truncated
+    // to the right size as to not overflow
+    if (fs->FAT[curr_index] == DATA_EOF)
+      size = fs->dir_table[dir_table_index].size % fs->superblock.block_size;
+    else
+      size = fs->superblock.block_size;
+
+    memcpy(data + fs->superblock.block_size * count, curr_data, size);
+
     free(curr_data);
-
     ++count;
-    ++size;
-
-    if (fs->FAT[curr_index] == 0xFF)
+    if (fs->FAT[curr_index] == DATA_EOF)
       break;
 
     curr_index = fs->FAT[curr_index];
