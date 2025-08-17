@@ -10,8 +10,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+      
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodule: on
     - name: make check
       run: make check
