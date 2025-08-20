@@ -3,7 +3,7 @@
 
 void print_FAT(struct FileSystem* fs) {
   puts("--- FAT ---");
-  for (int i = 0; i < fs->superblock.total_blocks; ++i)
+  for (int i = 0; i < fs->superblock->total_blocks; ++i)
     printf("%02X ", fs->FAT[i]);
   puts("\n"); // Actually puts two new line because puts auto-adds them
 }
@@ -21,13 +21,10 @@ void print_dir_table(struct FileSystem* fs, size_t index) {
 
 void print_superblock(struct FileSystem* fs) {
   puts("--- Superblock ---");
-  printf("Magic: %X\n", fs->superblock.magic);
-  printf("Version: %hu\n", fs->superblock.version);
-  printf("Block Size: %hu\n", fs->superblock.block_size);
-  printf("FAT start: %hu\n", fs->superblock.FAT_start);
-  printf("FAT size: %hu\n", fs->superblock.FAT_size);
-  printf("Directory table start: %hu\n", fs->superblock.dir_table_start);
-  printf("Directory table size: %hu\n", fs->superblock.dir_table_size);
-  printf("Free blocks: %hu\n", fs->superblock.free_blocks);
-  printf("Total blocks: %hu\n", fs->superblock.total_blocks);
+  printf("Magic: %X\n", fs->superblock->magic);
+  printf("Version: %hu\n", fs->superblock->version);
+  printf("Block Size: %hu\n", fs->superblock->block_size);
+  printf("Max files: %hu\n", fs->superblock->file_max);
+  printf("Free blocks: %hu\n", fs->superblock->free_blocks);
+  printf("Total blocks: %hu\n", fs->superblock->total_blocks);
 }

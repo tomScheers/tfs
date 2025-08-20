@@ -56,3 +56,10 @@ If it is a file it just stores data in different blocks which, you can find the 
 If it is a directory, it acts like a FAT in the sense that it stores all the blocks in the directory in order. This also means that it has a reserved block of its own.
 So say you wanted to open a nested file, say for example src/utils/foo.c, the program would first search for the src directory on the FAT, when it finds the location of the directory it does the exact same thing but then for the utils directory, and it does that again to find all the blocks which store data about foo.c.
 
+## Assumptions
+I've just discovered I tried to make this file system way too variable. Here, I'll just define some things which are standard for each and every single file:
+- The superblock is always the first block.
+- The superblock is always exactly 64 bytes.
+- The directory table is always the second element.
+- The FAT is always the third element.
+- All elements after the FAT are always data elements.

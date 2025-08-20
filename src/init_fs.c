@@ -1,26 +1,26 @@
-#include <stdlib.h>
 #include "tfslib.h"
+#include <stdlib.h>
 
 // Initializes the file system
-struct FileSystem* tfs_init() {
-  struct FileSystem* fs = malloc(sizeof(*fs));
+struct FileSystem *tfs_init() {
+  struct FileSystem *fs = malloc(sizeof(*fs));
   if (!fs)
     return NULL;
 
-  fs->FAT = calloc(FAT_SIZE, sizeof(*fs->FAT) * BLOCK_SIZE);
+  fs->FAT = calloc(1, MAX_FILE);
   if (!fs->FAT) {
     free(fs);
     return NULL;
   }
 
-  fs->data = calloc(FREE_BLOCKS, sizeof(*fs->data) * BLOCK_SIZE);
+  fs->data = calloc(MAX_FILE, BLOCK_SIZE);
   if (!fs->data) {
     free(fs->FAT);
     free(fs);
     return NULL;
   }
 
-  fs->dir_table = calloc(DIR_TABLE_SIZE, sizeof(*fs->dir_table) * BLOCK_SIZE);
+  fs->dir_table = calloc(MAX_FILE, sizeof(*fs->dir_table));
   if (!fs->dir_table) {
     free(fs->FAT);
     free(fs->data);
@@ -28,15 +28,20 @@ struct FileSystem* tfs_init() {
     return NULL;
   }
 
-  fs->superblock.magic = MAGIC_NUMBER;
-  fs->superblock.block_size = BLOCK_SIZE;
-  fs->superblock.dir_table_size = DIR_TABLE_SIZE;
-  fs->superblock.dir_table_start = DIR_TABLE_START;
-  fs->superblock.FAT_size = FAT_SIZE;
-  fs->superblock.FAT_start = FAT_START;
-  fs->superblock.free_blocks = FREE_BLOCKS;
-  fs->superblock.total_blocks = TOTAL_BLOCKS;
-  fs->superblock.version = VERSION;
+  fs->superblock = calloc(1, SUPERBLOCK_BYTES);
+  if (!fs->superblock) {
+    free(fs->FAT);
+    free(fs->data);
+    free(fs->dir_table);
+    free(fs);
+    return NULL;
+  }
+
+  fs->superblock->magic = MAGIC_NUMBER;
+  fs->superblock->block_size = BLOCK_SIZE;
+  fs->superblock->free_blocks = MAX_FILE;
+  fs->superblock->file_max = MAX_FILE;
+  fs->superblock->version = VERSION;
 
   return fs;
 }

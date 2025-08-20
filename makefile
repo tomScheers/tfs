@@ -1,6 +1,6 @@
 PROGRAM := tfs
 
-CC := gcc
+CC := clang
 CFLAGS := -Wall -Wextra -Iinclude -Ilib/Unity/src -O0 -ggdb -std=c99
 CFLAGS_TEST := -Wall -Wextra -O0 -Iinclude -Ilib/Unity/src -fsanitize=address,undefined -std=c99
 
