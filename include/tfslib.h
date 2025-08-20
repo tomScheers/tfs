@@ -9,11 +9,11 @@
 #define VERSION 0
 // #define TOTAL_BLOCKS 12
 #define MAX_FILE 12
-//#define DIR_TABLE_START 1
-//#define DIR_TABLE_SIZE 1
-//#define FAT_START 2
-//#define FAT_SIZE 1
-// #define FREE_BLOCKS TOTAL_BLOCKS - DIR_TABLE_SIZE - FAT_SIZE - 1
+// #define DIR_TABLE_START 1
+// #define DIR_TABLE_SIZE 1
+// #define FAT_START 2
+// #define FAT_SIZE 1
+//  #define FREE_BLOCKS TOTAL_BLOCKS - DIR_TABLE_SIZE - FAT_SIZE - 1
 
 #define DATA_EOF 0xFF
 #define SUPERBLOCK_BYTES 64

@@ -13,14 +13,13 @@ UNITY_SRC := lib/Unity/src/unity.c  # fixed case
 OBJ := $(patsubst src/%.c, build/%.o, $(SRC))
 TEST_OBJ := $(patsubst tests/%.c, test_build/%.o, $(TEST_SRC))
 UNITY_OBJ := test_build/unity.o
-
 LIB_SRC := $(filter-out src/main.c, $(SRC))
 LIB_OBJ := $(patsubst src/%.c,build/%.o,$(LIB_SRC))
 
 BIN := bin/$(PROGRAM)
 TEST_BIN := bin/test_$(PROGRAM)
 
-all:
+all: format
 	bear -- make $(BIN)
 
 # Main program
@@ -40,9 +39,6 @@ test_build/%.o: tests/%.c | test_build
 test_build/unity.o: $(UNITY_SRC) | test_build
 	$(CC) $(CFLAGS) -c $< -o $@
 
-check: $(TEST_BIN)
-	@./$(TEST_BIN)
-
 # Dirs
 build:
 	@mkdir -p build
@@ -57,4 +53,11 @@ bin:
 clean:
 	rm -rf build bin compile_commands.json test_build
 
-.PHONY: all check clean
+format:
+	@( find src/ -iname "*.h" -o -iname "*.c"; find include/ -iname "*.h" -o -iname "*.c"; find tests/ -iname "*.h" -o -iname "*.c"; ) | xargs clang-format -i
+
+
+check: $(TEST_BIN) format
+	@./$(TEST_BIN)
+
+.PHONY: all check clean format

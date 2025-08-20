@@ -25,8 +25,7 @@ struct FileSystem *tfs_read_fs(char file_name[]) {
   for (size_t i = 0; i < superblock->file_max; ++i) {
     size_t seek = SUPERBLOCK_BYTES + dir_table_entry_size * i;
     fseek(fptr, seek, SEEK_SET);
-    fread(&fs->dir_table[i], 1,
-          sizeof(struct DirTableEntry), fptr);
+    fread(&fs->dir_table[i], 1, sizeof(struct DirTableEntry), fptr);
   }
 
   size_t FAT_start =

@@ -1,14 +1,14 @@
 #include "tfslib.h"
 #include <stdio.h>
 
-void print_FAT(struct FileSystem* fs) {
+void print_FAT(struct FileSystem *fs) {
   puts("--- FAT ---");
   for (int i = 0; i < fs->superblock->file_max; ++i)
     printf("%02X ", fs->FAT[i]);
   puts("\n"); // Actually puts two new line because puts auto-adds them
 }
 
-void print_dir_table(struct FileSystem* fs, size_t index) {
+void print_dir_table(struct FileSystem *fs, size_t index) {
   puts("--- Dir Table ---");
   printf("Name: %s\n", fs->dir_table[index].name);
   printf("Size: %hu\n", fs->dir_table[index].size);
@@ -19,7 +19,7 @@ void print_dir_table(struct FileSystem* fs, size_t index) {
   printf("Modified: %ld\n\n", (long)fs->dir_table[index].last_modified);
 }
 
-void print_superblock(struct FileSystem* fs) {
+void print_superblock(struct FileSystem *fs) {
   puts("--- Superblock ---");
   printf("Magic: %X\n", fs->superblock->magic);
   printf("Version: %hu\n", fs->superblock->version);

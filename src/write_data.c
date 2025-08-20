@@ -1,9 +1,9 @@
 #include "tfslib.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <stddef.h>
 
 #define IS_FREE(fat_entry) (fat_entry) != 0x00
 

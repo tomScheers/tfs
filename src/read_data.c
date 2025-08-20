@@ -58,7 +58,6 @@ unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
       return NULL;
     }
 
-
     size_t size;
 
     // If the current memory block is EOF then the size of the data is truncated
