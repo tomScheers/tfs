@@ -3,12 +3,12 @@
 
 // Initializes the file system
 struct FileSystem *tfs_init() {
-    struct FileSystem *fs = malloc(sizeof(*fs));
-    if (!fs)
-      return NULL;
+  struct FileSystem *fs = malloc(sizeof(*fs));
+  if (!fs)
+    return NULL;
 
-fs->FAT = calloc(1, MAX_FILE);
-if (!fs->FAT) {
+  fs->FAT = calloc(1, MAX_FILE);
+  if (!fs->FAT) {
     free(fs);
     return NULL;
   }
