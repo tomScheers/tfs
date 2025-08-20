@@ -16,13 +16,10 @@ static unsigned char *tfs_read_block(struct FileSystem *fs,
   else
     data_size = fs->superblock->block_size;
 
-  printf("data_size: %zu\n", data_size);
   data = malloc(sizeof(*data) * data_size);
   if (!data)
     return NULL;
 
-  printf("Reading data from: %hu\n", data_index);
-  printf("Data to be read: %s\n", fs->data + data_index);
   memcpy(data, fs->data + data_index, data_size);
   return data;
 }
@@ -32,7 +29,6 @@ unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
   // The data memory is handled as a dynamic array in order to store any
   // arbitrary amount of data
   size_t capacity = 2;
-  printf("%zu * %zu * %zu = %zu", sizeof(unsigned char), capacity, (size_t)fs->superblock->block_size, sizeof(unsigned char) * capacity * fs->superblock->block_size);
   unsigned char *data =
       malloc(sizeof(*data) * capacity * fs->superblock->block_size);
   if (!data)
@@ -55,7 +51,6 @@ unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
       data = tmp;
     }
 
-    printf("Block index: %hu\n", curr_index);
     unsigned char *curr_data = tfs_read_block(fs, curr_index, dir_table_index);
 
     if (!curr_data) {
@@ -63,7 +58,6 @@ unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
       return NULL;
     }
 
-    // printf("Curr data: %s\n", (char*)curr_data);
 
     size_t size;
 
@@ -78,8 +72,6 @@ unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t dir_table_index) {
 
     free(curr_data);
     ++count;
-    printf("curr index: %hu\n", curr_index);
-    print_FAT(fs);
     if (fs->FAT[curr_index] == DATA_EOF)
       break;
 

@@ -3,7 +3,7 @@
 
 void print_FAT(struct FileSystem* fs) {
   puts("--- FAT ---");
-  for (int i = 0; i < fs->superblock->total_blocks; ++i)
+  for (int i = 0; i < fs->superblock->file_max; ++i)
     printf("%02X ", fs->FAT[i]);
   puts("\n"); // Actually puts two new line because puts auto-adds them
 }
@@ -26,5 +26,4 @@ void print_superblock(struct FileSystem* fs) {
   printf("Block Size: %hu\n", fs->superblock->block_size);
   printf("Max files: %hu\n", fs->superblock->file_max);
   printf("Free blocks: %hu\n", fs->superblock->free_blocks);
-  printf("Total blocks: %hu\n", fs->superblock->total_blocks);
 }

@@ -24,11 +24,10 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
   // Loops over entire data array until it reaches the EOF
   while (!is_EOF) {
     block_index = 0;
+
     // Increment the block_index until it reaches a non-restricted free block
-    while (IS_FREE(fs->FAT[block_index]) || block_index == prev_block_index) {
+    while (IS_FREE(fs->FAT[block_index]) || block_index == prev_block_index)
       ++block_index;
-    }
-    printf("Block Index; %d\n", block_index);
 
     // If count is 0 then it'll set first_block_index to, well, the first block
     // index

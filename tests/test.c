@@ -11,8 +11,8 @@ void tfs_test_init();
 void tfs_test_readwrite_fs();
 void tfs_test_readwrite_data();
 
+// These tests don't have propper error handling yet
 int main() {
-  printf("Superblock size: %zu\n", sizeof(struct SuperBlock));
   UNITY_BEGIN();
   RUN_TEST(tfs_test_init);
   RUN_TEST(tfs_test_readwrite_data);
@@ -38,21 +38,21 @@ void tfs_test_readwrite_fs() {
   fs->superblock->version = new_version;
   unsigned char data[] = "Hello World!";
   size_t index = tfs_write_data(fs, "test.txt", data, sizeof(data));
-  TEST_ASSERT_EQUAL_STRING(data, tfs_read_data(fs, index));
+  unsigned char* read_data = tfs_read_data(fs, index);
+  TEST_ASSERT_EQUAL_STRING(data, read_data);
+  free(read_data);
   tfs_save_fs(fs, "file.tfs");
   tfs_free_fs(fs);
   struct FileSystem *read_fs = tfs_read_fs("file.tfs");
-  printf("Even here!?\n");
   TEST_ASSERT_NOT_EQUAL_MESSAGE(read_fs, NULL, "File system must not be NULL");
   TEST_ASSERT_EQUAL_INT16(read_fs->superblock->block_size, BLOCK_SIZE);
   TEST_ASSERT_EQUAL_INT16(read_fs->superblock->free_blocks, MAX_FILE - 1);
   TEST_ASSERT_EQUAL_INT16(read_fs->superblock->file_max, MAX_FILE);
   TEST_ASSERT_EQUAL_HEX32(read_fs->superblock->magic, MAGIC_NUMBER);
   TEST_ASSERT_EQUAL_INT16(read_fs->superblock->version, new_version);
-  // printf("Data read: %s\n", tfs_read_data(read_fs, index));
-  printf("Data index to read: %zu\n", index);
-  printf("Data on the data field: %s\n", (char*)(read_fs->data));
-  TEST_ASSERT_EQUAL_STRING(tfs_read_data(read_fs, index), data);
+  read_data = tfs_read_data(read_fs, index);
+  TEST_ASSERT_EQUAL_STRING(read_data, data);
+  free(read_data);
   tfs_free_fs(read_fs);
 }
 
@@ -114,5 +114,4 @@ void tfs_test_readwrite_data() {
 
   free(read_superblock);
   tfs_free_fs(fs);
-
 }

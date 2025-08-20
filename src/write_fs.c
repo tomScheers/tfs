@@ -29,19 +29,12 @@ int8_t tfs_save_fs(struct FileSystem *fs, char *file_name) {
 
   fwrite(fs->superblock, 1, SUPERBLOCK_BYTES, fptr);
 
-  for (size_t i = 0; i < fs->superblock->file_max; ++i) {
+  for (size_t i = 0; i < fs->superblock->file_max; ++i)
     fwrite((unsigned char*)fs->dir_table + i * sizeof(*fs->dir_table), 1, sizeof(*fs->dir_table), fptr);
-  }
 
   fwrite(fs->FAT, 1, fs->superblock->file_max, fptr);
-  for (size_t i = 0; i < fs->superblock->file_max; ++i) {
-      if (!fs->data || !(fs->data + i * fs->superblock->block_size)) {
-          printf("Invalid data\n");
-          continue;
-      }
-      printf("Data: %s\n", (char*)(fs->data + i * fs->superblock->block_size));
+  for (size_t i = 0; i < fs->superblock->file_max; ++i)
       fwrite(fs->data + i * fs->superblock->block_size, 1, fs->superblock->block_size, fptr);
-  }
 
   fclose(fptr);
   return 0;
