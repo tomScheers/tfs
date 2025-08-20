@@ -56,7 +56,6 @@ clean:
 format:
 	@( find src/ -iname "*.h" -o -iname "*.c"; find include/ -iname "*.h" -o -iname "*.c"; find tests/ -iname "*.h" -o -iname "*.c"; ) | xargs clang-format -i
 
-
 check: $(TEST_BIN) format
 	@./$(TEST_BIN)
 

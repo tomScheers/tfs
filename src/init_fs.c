@@ -3,7 +3,7 @@
 
 // Initializes the file system
 struct FileSystem *tfs_init() {
-      struct FileSystem *fs = malloc(sizeof(*fs));
+    struct FileSystem *fs = malloc(sizeof(*fs));
     if (!fs)
       return NULL;
 
