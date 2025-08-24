@@ -30,30 +30,21 @@ enum Errors {
   ERR_INSUFFICIENT_MEMORY, // Insufficient memory i.e. writing more memory
                            // blocks then that there are blocks free
   ERR_TIME_RETRIEVAL,      // If time(NULL) returns (time_t)-1
+  ERR_OFB_READ,  // If you try to read from an index which is out of bounds from
+                 // let's say the dir_table array
+  ERR_OFB_WRITE, // If you try to modify something out of bounds
 };
 
 struct SuperBlock {
   uint32_t magic; // Magic number to verify the file
   uint16_t version;
   uint16_t block_size;
-  // uint16_t total_blocks;
+
   uint16_t free_blocks;
-  // uint16_t dir_table_start;
-  // uint16_t dir_table_size;
-  // uint16_t FAT_start;
-  // uint16_t FAT_size;
-  /*
-   * Since each FAT item represents one data element and is exactly 1 byte
-   * large, therefore we can use file_max to represent the size of our FAT.
-   * The same goes for dir_table_size, since each file and directory must have a
-   * corresponding dir_table for metadata, the sizeof *dir_table can be
-   * calculated using file_max * sizeof(struct DirTableEntry).
-   */
-  /*
-   * One thing which I must note here is that all of the restricted memory
-   * doesn't follow the same data format as the data field does.
-   * */
-  uint16_t file_max; // New method of calculating directory size
+  uint16_t amount_of_files;
+
+  uint16_t file_max; // The maximum amount of files I can have, useful for
+                     // calculating all sorts of things
 };
 
 // This will go into an array-of-structs
@@ -83,10 +74,12 @@ void tfs_free_fs(struct FileSystem *fs);
 int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
                        unsigned char *bytes, size_t size);
 unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t index);
+uint8_t tfs_delete_file(struct FileSystem *fs, uint16_t index);
 
 // Utility functions
 void print_FAT(struct FileSystem *fs);
 void print_dir_table(struct FileSystem *fs, size_t index);
 void print_superblock(struct FileSystem *fs);
+void print_pwd(struct FileSystem *fs);
 
 #endif

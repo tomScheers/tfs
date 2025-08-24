@@ -8,7 +8,7 @@ LD_FLAGS_TEST := -fsanitize=undefined,leak
 
 SRC := $(wildcard src/*.c)
 TEST_SRC := $(wildcard tests/*.c)
-UNITY_SRC := lib/Unity/src/unity.c  # fixed case
+UNITY_SRC := lib/Unity/src/unity.c 
 
 OBJ := $(patsubst src/%.c, build/%.o, $(SRC))
 TEST_OBJ := $(patsubst tests/%.c, test_build/%.o, $(TEST_SRC))

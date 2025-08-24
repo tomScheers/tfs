@@ -27,3 +27,9 @@ void print_superblock(struct FileSystem *fs) {
   printf("Max files: %hu\n", fs->superblock->file_max);
   printf("Free blocks: %hu\n", fs->superblock->free_blocks);
 }
+
+void print_pwd(struct FileSystem *fs) {
+  printf("Amount of files: %hu\n", fs->superblock->amount_of_files);
+  for (uint16_t i = 0; i < fs->superblock->amount_of_files; ++i)
+    puts(fs->dir_table[i].name);
+}
