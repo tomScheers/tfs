@@ -65,10 +65,9 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
     prev_block_index = block_index;
   }
 
-  uint16_t dir_table_index =
-      fs->superblock->file_max - fs->superblock->free_blocks;
+  uint16_t dir_table_index = first_block_index;
 
-  strncat(fs->dir_table[dir_table_index].name, file_path, strlen(file_path));
+  strncpy(fs->dir_table[dir_table_index].name, file_path, strlen(file_path));
   fs->dir_table[dir_table_index].name[strlen(file_path)] = '\0';
 
   time_t current_time = time(NULL);
@@ -78,6 +77,7 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
     return ERR_TIME_RETRIEVAL;
   }
 
+  fs->dir_table[dir_table_index].FAT_index = first_block_index;
   fs->dir_table[dir_table_index].is_dir = 0;
   fs->dir_table[dir_table_index].created = current_time;
   fs->dir_table[dir_table_index].last_modified = current_time;
@@ -85,7 +85,8 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
   fs->dir_table[dir_table_index].size = size;
 
   fs->FAT[block_index] = DATA_EOF; // Set last block to EOF
+  fs->superblock->free_blocks -= count;
+  ++fs->superblock->amount_of_files;
 
-  --fs->superblock->free_blocks;
   return dir_table_index;
 }

@@ -41,6 +41,7 @@ struct FileSystem *tfs_init() {
   fs->superblock->block_size = BLOCK_SIZE;
   fs->superblock->free_blocks = MAX_FILE;
   fs->superblock->file_max = MAX_FILE;
+  fs->superblock->amount_of_files = 0;
   fs->superblock->version = VERSION;
 
   return fs;

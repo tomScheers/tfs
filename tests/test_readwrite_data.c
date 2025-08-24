@@ -60,6 +60,7 @@ void tfs_test_readwrite_data() {
   TEST_ASSERT_EQUAL_UINT16(read_superblock->block_size, BLOCK_SIZE);
   TEST_ASSERT_EQUAL_UINT16(read_superblock->free_blocks, MAX_FILE);
   TEST_ASSERT_EQUAL_UINT16(read_superblock->file_max, MAX_FILE);
+  TEST_ASSERT_EQUAL_UINT16(read_superblock->amount_of_files, 0);
   TEST_ASSERT_EQUAL_UINT32(read_superblock->magic, MAGIC_NUMBER);
   TEST_ASSERT_EQUAL_UINT16(read_superblock->version, VERSION);
 
