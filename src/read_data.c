@@ -5,10 +5,11 @@
 
 // Reads the data on a block and returns it
 static unsigned char *tfs_read_block(struct FileSystem *fs,
-                                     uint16_t dir_table_index,
+                                     uint16_t block_index,
                                      uint16_t dir_table_head) {
-  uint16_t data_index = dir_table_index * fs->superblock->block_size;
-  uint8_t is_EOF = fs->FAT[dir_table_index] == DATA_EOF;
+  fprintf(stdout, "%d\n", block_index);
+  uint16_t data_index = block_index * fs->superblock->block_size;
+  uint8_t is_EOF = fs->FAT[block_index] == DATA_EOF;
   unsigned char *data = NULL;
   size_t data_size;
   if (is_EOF)

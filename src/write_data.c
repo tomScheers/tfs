@@ -65,7 +65,9 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
     prev_block_index = block_index;
   }
 
-  uint16_t dir_table_index = first_block_index;
+  uint16_t dir_table_index = 0;
+  for (; fs->dir_table[dir_table_index].created > 0; ++dir_table_index)
+    ;
 
   strncpy(fs->dir_table[dir_table_index].name, file_path, strlen(file_path));
   fs->dir_table[dir_table_index].name[strlen(file_path)] = '\0';
@@ -78,7 +80,7 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
   }
 
   fs->dir_table[dir_table_index].FAT_index = first_block_index;
-  fs->dir_table[dir_table_index].is_dir = 0;
+  //  fs->dir_table[dir_table_index].is_dir = 0;
   fs->dir_table[dir_table_index].created = current_time;
   fs->dir_table[dir_table_index].last_modified = current_time;
   fs->dir_table[dir_table_index].starting_block = first_block_index;

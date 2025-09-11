@@ -10,5 +10,6 @@ void tfs_free_fs(struct FileSystem *fs) {
   free(fs->FAT);
   free(fs->dir_table);
   free(fs->superblock);
+  free(fs->sub_directories);
   free(fs);
 }

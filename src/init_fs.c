@@ -37,6 +37,16 @@ struct FileSystem *tfs_init() {
     return NULL;
   }
 
+  fs->sub_directories = calloc(SUB_DIRS, sizeof(*fs->sub_directories));
+  if (!fs->sub_directories) {
+    free(fs->FAT);
+    free(fs->data);
+    free(fs->dir_table);
+    free(fs->superblock);
+    free(fs);
+    return NULL;
+  }
+
   fs->superblock->magic = MAGIC_NUMBER;
   fs->superblock->block_size = BLOCK_SIZE;
   fs->superblock->free_blocks = MAX_FILE;

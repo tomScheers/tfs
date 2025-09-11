@@ -30,6 +30,9 @@ void print_superblock(struct FileSystem *fs) {
 
 void print_pwd(struct FileSystem *fs) {
   printf("Amount of files: %hu\n", fs->superblock->amount_of_files);
-  for (uint16_t i = 0; i < fs->superblock->amount_of_files; ++i)
+  for (uint16_t i = 0; i < fs->superblock->amount_of_files; ++i) {
+    if (fs->dir_table[i].is_dir)
+      putchar('*');
     puts(fs->dir_table[i].name);
+  }
 }

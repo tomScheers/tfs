@@ -21,9 +21,7 @@ The superblock is used to store data about the file system itself. The data is s
 | Block Size            | 2 bytes      |
 | Total blocks          | 2 bytes      |
 | Free blocks           | 2 bytes      |
-| Directory Table Start | 2 bytes      |
 | Directory Block Count | 2 bytes      |
-| FAT Start Block       | 2 bytes      |
 | FAT Block Count       | 2 bytes      |
 
 When starting the program this is the first thing which gets read. This is used to firstly confirm the file is compatible through the magic number, the other is metadata which is usually the same but it's still handy to have it in the superblock if specifications change.
@@ -63,3 +61,12 @@ I've just discovered I tried to make this file system way too variable. Here, I'
 - The directory table is always the second element.
 - The FAT is always the third element.
 - All elements after the FAT are always data elements.
+
+## Directories
+I must also support directories. I was thinking about making a seperate struct for directories in a tree fashion. Each Directory will have the following fields:
+- Parent node
+- Any child nodes
+- Data field
+- FAT
+- Metadata
+You can see the FileSystem as a superset of the Directory struct. A directory doesn't store any data on the data field nor does it have it's own directory table field, all the metadata and data will be stored on the struct itself.

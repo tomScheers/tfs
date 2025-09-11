@@ -17,6 +17,7 @@ int main() {
   RUN_TEST(tfs_test_readwrite_data);
   RUN_TEST(tfs_test_readwrite_fs);
   RUN_TEST(tfs_test_delete_file);
+  RUN_TEST(tfs_test_dir);
   UNITY_END();
   return 0;
 }

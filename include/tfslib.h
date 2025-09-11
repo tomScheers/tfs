@@ -1,22 +1,20 @@
 #ifndef TFS_H
 #define TFS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
 
 #define BLOCK_SIZE 64
 #define MAGIC_NUMBER 0x74667300 // 't' 'f' 's' '\0', used for magic number
 #define VERSION 0
-// #define TOTAL_BLOCKS 12
 #define MAX_FILE 12
-// #define DIR_TABLE_START 1
-// #define DIR_TABLE_SIZE 1
-// #define FAT_START 2
-// #define FAT_SIZE 1
-//  #define FREE_BLOCKS TOTAL_BLOCKS - DIR_TABLE_SIZE - FAT_SIZE - 1
 
+#define MAX_FILE_LEN 64
 #define DATA_EOF 0xFF
 #define SUPERBLOCK_BYTES 64
+
+#define SUB_DIRS 32
 
 #define DATA_BLOCKS(fs)                                                        \
   (fs->superblock->total_blocks - fs->superblock->dir_table_size -             \
@@ -33,6 +31,7 @@ enum Errors {
   ERR_OFB_READ,  // If you try to read from an index which is out of bounds from
                  // let's say the dir_table array
   ERR_OFB_WRITE, // If you try to modify something out of bounds
+  ERR_HEAP_ALLOC,
 };
 
 struct SuperBlock {
@@ -54,8 +53,7 @@ struct DirTableEntry {
   uint16_t starting_block;
   uint16_t size;      // Size of the data
   uint16_t FAT_index; // Index of the FAT entry
-  uint8_t is_dir;     // Directories are handled differently from files, see doc
-  char name[64];
+  char name[MAX_FILE_LEN];
 };
 
 struct FileSystem {
@@ -65,6 +63,19 @@ struct FileSystem {
   unsigned char *FAT; // Must be allocated on the heap
   unsigned char
       *data; // Must be allocated on the heap, 1-dimensional flat array
+  struct DirNode *sub_directories;
+};
+
+struct DirNode {
+  struct DirTableEntry *dir_table;
+  union {
+    struct DirNode *parent_dir;
+    struct FileSystem *parent_fs;
+  } parent;
+  struct DirNode *sub_directories;
+  unsigned char *FAT;
+  unsigned char *data;
+  char name[MAX_FILE_LEN];
 };
 
 struct FileSystem *tfs_init();
@@ -75,6 +86,7 @@ int32_t tfs_write_data(struct FileSystem *fs, char file_path[],
                        unsigned char *bytes, size_t size);
 unsigned char *tfs_read_data(struct FileSystem *fs, uint16_t index);
 uint8_t tfs_delete_file(struct FileSystem *fs, uint16_t index);
+uint8_t tfs_mk_dir(struct FileSystem *fs, char dir_path[64]);
 
 // Utility functions
 void print_FAT(struct FileSystem *fs);

@@ -1,20 +1,21 @@
 [
   {
     "arguments": [
-      "/usr/bin/gcc",
+      "/usr/bin/clang",
       "-Wall",
       "-Wextra",
       "-Iinclude",
       "-Ilib/Unity/src",
       "-O0",
       "-ggdb",
+      "-std=c99",
       "-c",
       "-o",
-      "build/write_data.o",
-      "src/write_data.c"
+      "build/read_data.o",
+      "src/read_data.c"
     ],
     "directory": "/home/tom/Programming/C/tfs",
-    "file": "/home/tom/Programming/C/tfs/src/write_data.c",
-    "output": "/home/tom/Programming/C/tfs/build/write_data.o"
+    "file": "/home/tom/Programming/C/tfs/src/read_data.c",
+    "output": "/home/tom/Programming/C/tfs/build/read_data.o"
   }
 ]

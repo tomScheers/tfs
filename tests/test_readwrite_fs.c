@@ -3,6 +3,7 @@
 #include "unity.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 void tfs_test_readwrite_fs() {
@@ -28,4 +29,5 @@ void tfs_test_readwrite_fs() {
   TEST_ASSERT_EQUAL_STRING(read_data, data);
   free(read_data);
   tfs_free_fs(read_fs);
+  remove("file.tfs");
 }
